@@ -11,7 +11,9 @@ class Config:
     
     dot_color: str
     game_title: str
-    
+   
+    player1_starts: bool
+     
     player1_colors: List[str]
     player2_colors: List[str]
     
@@ -32,6 +34,8 @@ class Config:
         dot_color: str = '#7BC043'
         game_title: str = 'Dots and Boxes'
         
+        player1_starts: bool = True
+        
         player1_colors: List[str] = field(default_factory=lambda: ['#0492CF', '#67B0CF'])
         player2_colors: List[str] = field(default_factory=lambda: ['#EE4035', '#EE7E77'])
 
@@ -42,16 +46,17 @@ class Config:
             edge_width = 0.1 * self.board_width / self.total_rows
             
             return Config(
-                board_width=self.board_width,
+                player1_colors=self.player1_colors,
+                player2_colors=self.player2_colors,
+                player1_starts=self.player1_starts,
                 board_height=self.board_height,
+                board_width=self.board_width,
+                dots_distance=dots_distance,
                 total_rows=self.total_rows,
                 total_cols=self.total_cols,
                 thickness=self.thickness,
                 dot_color=self.dot_color,
                 game_title=self.game_title,
-                player1_colors=self.player1_colors,
-                player2_colors=self.player2_colors,
-                dots_distance=dots_distance,
                 symbol_size=symbol_size,
                 edge_width=edge_width,
                 dot_width=dot_width
