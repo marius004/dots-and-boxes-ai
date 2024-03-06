@@ -5,4 +5,3 @@ config = Config.Builder(total_rows=6, total_cols=6).build()
 board = Board(config)
 
 board.mainloop()
-

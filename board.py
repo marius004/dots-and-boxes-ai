@@ -1,4 +1,5 @@
 from config import Config
+from graph import Graph
 from tkinter import *
 import numpy as np
 
@@ -10,6 +11,7 @@ class Board:
         self.turn_handle = None
         self.marked_boxes = {}
         self.config = config
+        self.graph = Graph()
         self.board = {}
         
         self.window = Tk()
