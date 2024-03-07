@@ -1,7 +1,7 @@
 import copy
 
 class Box: 
-    def __init__(self, x, y, player) -> None:
+    def __init__(self, x, y) -> None:
         self.coordinates = [
             (x, y),
             (x + 1, y),
@@ -11,17 +11,20 @@ class Box:
         self.lines = [
             (self.coordinates[0], self.coordinates[1]),
             (self.coordinates[0], self.coordinates[2]),
-            (self.coordinates[1], self.coordinates[3])
+            (self.coordinates[1], self.coordinates[3]),
             (self.coordinates[2], self.coordinates[3])
         ]
         self.completed = [False] * len(self.lines) 
-        self.owner = player
+        self.owner = None
     
     def lines(self):
         return copy.deepcopy(self.lines)
     
     def complete(self): 
         return self.complete
+    
+    def owner(self): 
+        return self.owner
         
     def connect(self, line, player):
         if line in self.lines: 

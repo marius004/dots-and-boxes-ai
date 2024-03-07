@@ -1,4 +1,5 @@
-from box import Box
+from core.box import Box
+import copy
 
 class Board: 
     def __init__(self, rows, cols) -> None:
@@ -9,6 +10,12 @@ class Board:
         self.possible_moves  = self.calc_possible_moves(self.rows, self.cols)
         self.performed_moves = set()
         self.scores = {}
+        
+    def allowed_moves(self):
+        return copy.deepcopy(self.possible_moves)
+    
+    def player_score(self, player): 
+        return self.scores.get(player, 0)
         
     def calc_possible_moves(self, rows, cols):
         moves = []
