@@ -17,13 +17,16 @@ class Box:
         self.completed = [False] * len(self.lines) 
         self.owner = None
     
-    def lines(self):
+    def all_lines(self):
         return copy.deepcopy(self.lines)
     
-    def complete(self): 
-        return self.complete
+    def all_coordinates(self):
+        return copy.deepcopy(self.coordinates)
     
-    def owner(self): 
+    def is_complete(self): 
+        return all(self.completed)
+    
+    def box_owner(self): 
         return self.owner
         
     def connect(self, line, player):

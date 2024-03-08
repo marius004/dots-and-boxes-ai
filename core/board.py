@@ -11,6 +11,12 @@ class Board:
         self.performed_moves = set()
         self.scores = {}
         
+    def completed_boxes(self): 
+        return [copy.deepcopy(box) for row in self.boxes for box in row if box.is_complete()]
+    
+    def is_gameover(self):
+        return len(self.possible_moves) == 0
+        
     def allowed_moves(self):
         return copy.deepcopy(self.possible_moves)
     
@@ -39,11 +45,10 @@ class Board:
 
         return False
     
-    def connect(self, coordinates, player): 
+    def connect(self, coordinates, player):
         for i in range(self.rows):
             for j in range(self.cols): 
-                if coordinates in self.boxes[i][j].lines(): 
+                if coordinates in self.boxes[i][j].all_lines(): 
                     self.boxes[i][j].connect(coordinates, player)
-                    if self.boxes[i][j].complete():
+                    if self.boxes[i][j].is_complete():
                         self.scores[player] = self.scores.get(player, 0) + 1
-    
