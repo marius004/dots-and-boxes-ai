@@ -4,8 +4,10 @@ from core.constants import *
 from core.box import Box
 
 from ai.minimax import MiniMax
+from ai.alphabeta import AlphaBeta
 
 from tkinter import *
+from math import inf
 
 class Window():
     def __init__(self, config: Config) -> None:
@@ -156,7 +158,6 @@ class Window():
                                 text=score_text)   
    
     def do_stuff(self, position): 
-        # position = self.position(event.x, event.y)
         player = self.board.player_turn()
 
         if self.board.move(position):
@@ -173,10 +174,18 @@ class Window():
         if not self.reset_board and self.board.player_turn() == HUMAN_PLAYER:   
             self.do_stuff(self.position(event.x, event.y))
         elif self.board.player_turn() == AI_PLAYER and not self.reset_board:
+            """
             minimax = MiniMax()
             score, position = minimax.minimax(self.board, 3, True)
             print(score, position)
             self.do_stuff(position)
+            """ 
+            
+            alphabeta = AlphaBeta()
+            score, position = alphabeta.alpha_beta(self.board, 3, -inf, inf, True)
+            print(score, position)
+            self.do_stuff(position)            
+            
         elif self.reset_board: 
             self.canvas.delete("all")
             self.reset_board = False 
