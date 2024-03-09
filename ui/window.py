@@ -2,6 +2,9 @@ from core.config import Config
 from core.board import Board
 from core.constants import * 
 from core.box import Box
+
+from ai.minimax import MiniMax
+
 from tkinter import *
 
 class Window():
@@ -9,8 +12,6 @@ class Window():
         self.board = Board(config.total_rows, config.total_cols)
         self.config = config
         
-        self.scoredPoints = False
-        self.human_player = True
         self.reset_board = False
         self.turn_handle = None
         self.marked_boxes = set()
@@ -29,6 +30,7 @@ class Window():
     
     def restore(self): 
         self.refresh()
+        self.board = Board(self.config.total_rows, self.config.total_cols)
         self.update_turn()
         
     def refresh(self): 
@@ -50,14 +52,14 @@ class Window():
                                         fill=self.config.dot_color, outline=self.config.dot_color)   
     
     def update_turn(self):
-        text  = f"Next turn:  {'You' if self.human_player else 'AI'}"
-        color = self.config.player1_colors[0] if self.human_player else self.config.player2_colors[0]
+        text  = f"Next turn:  {'You' if self.board.player_turn() == HUMAN_PLAYER else 'AI'}"
+        color = self.config.player1_colors[0] if self.board.player_turn() == HUMAN_PLAYER else self.config.player2_colors[0]
         
         self.canvas.delete(self.turn_handle)
         self.turn_handle = self.canvas.create_text(self.config.board_width - 6 * len(text),
                                                        self.config.board_height - self.config.dots_distance / 8,
                                                        font="cmr 15 bold", text=text, fill=color)
-    def update(self, coordinates): 
+    def update(self, coordinates, player): 
         (x1, y1), (x2, y2) = coordinates
         box_x1 = x1 * self.config.dots_distance + self.config.dots_distance / 2
         box_y1 = y1 * self.config.dots_distance + self.config.dots_distance / 2
@@ -65,7 +67,7 @@ class Window():
         box_x2 = x2 * self.config.dots_distance + self.config.dots_distance / 2
         box_y2 = y2 * self.config.dots_distance + self.config.dots_distance / 2
        
-        color = self.config.player1_colors[0] if self.human_player \
+        color = self.config.player1_colors[0] if player == HUMAN_PLAYER \
                                 else self.config.player2_colors[0]
         self.canvas.create_line(box_x1, box_y1, box_x2, box_y2, fill=color, width=self.config.edge_width) 
     
@@ -73,7 +75,6 @@ class Window():
         for box in self.board.completed_boxes(): 
             if box not in self.marked_boxes:
                 self.shade_box(box)  
-                self.scoredPoints = True
                 self.marked_boxes.add(box)
     
     def position(self, x, y):
@@ -133,7 +134,7 @@ class Window():
             text = 'Winner: AI '
             color = self.config.player2_colors[0]
         else:
-            text = "Tie"
+            text = "It is a tie"
             color = 'gray'
 
         self.canvas.delete("all")
@@ -143,8 +144,8 @@ class Window():
         self.canvas.create_text(self.config.board_width / 2, 5 * self.config.board_height / 8, font="cmr 40 bold", fill='#7BC043',
                                 text=score_text)
 
-        score_text = 'Player 1 : ' + str(human_score) + '\n'
-        score_text += 'Player 2 : ' + str(ai_score) + '\n'
+        score_text = 'You : ' + str(human_score) + '\n'
+        score_text += 'AI : ' + str(ai_score) + '\n'
 
         self.canvas.create_text(self.config.board_width / 2, 3 * self.config.board_height / 4, font="cmr 30 bold", fill='#7BC043',
                                 text=score_text)
@@ -154,23 +155,29 @@ class Window():
         self.canvas.create_text(self.config.board_width / 2, 15 * self.config.board_height / 16, font="cmr 20 bold", fill="gray",
                                 text=score_text)   
    
+    def do_stuff(self, position): 
+        # position = self.position(event.x, event.y)
+        player = self.board.player_turn()
+
+        if self.board.move(position):
+            self.update(position, player)
+            self.fill_boxes()
+            self.refresh()
+            
+            if self.board.is_gameover(): 
+                self.show_gameover()
+            else: 
+                self.update_turn()
     
     def handle_click(self, event): 
-        if not self.reset_board:
-            position = self.position(event.x, event.y)
-            if self.board.move(position, HUMAN_PLAYER if self.human_player else AI_PLAYER):
-                self.update(position)
-                self.fill_boxes()
-                self.refresh()
-                
-                self.human_player = (not self.human_player) if not self.scoredPoints else self.human_player
-                self.scoredPoints = False
-                
-                if self.board.is_gameover(): 
-                    self.show_gameover()
-                else: 
-                    self.update_turn()
-        else: 
+        if not self.reset_board and self.board.player_turn() == HUMAN_PLAYER:   
+            self.do_stuff(self.position(event.x, event.y))
+        elif self.board.player_turn() == AI_PLAYER and not self.reset_board:
+            minimax = MiniMax()
+            score, position = minimax.minimax(self.board, 3, True)
+            print(score, position)
+            self.do_stuff(position)
+        elif self.reset_board: 
             self.canvas.delete("all")
             self.reset_board = False 
             self.restore()
