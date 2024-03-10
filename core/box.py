@@ -26,6 +26,15 @@ class Box:
     def is_complete(self): 
         return all(self.completed)
     
+    def chains(self):
+        return sum (1 for line in [
+            self.completed[0] and self.completed[1],
+            self.completed[0] and self.completed[2], 
+            self.completed[3] and self.completed[1],
+            self.completed[3] and self.completed[2]   
+        ] if line)
+    
+    
     def box_owner(self): 
         return self.owner
         

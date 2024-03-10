@@ -47,5 +47,16 @@ class AlphaBeta:
 
         return best
     
+    # def evaluate(self, board: Board):
+    #     return board.player_score(AI_PLAYER) - board.player_score(HUMAN_PLAYER)
+    
     def evaluate(self, board: Board):
-        return board.player_score(AI_PLAYER) - board.player_score(HUMAN_PLAYER)
+        ai_score = board.player_score(AI_PLAYER)
+        human_score = board.player_score(HUMAN_PLAYER)
+        
+        chains = sum(box.chains() for box in board.all_boxes() if not box.is_complete())
+
+        evaluation = 10 * (ai_score - human_score)
+        evaluation += chains
+        
+        return evaluation

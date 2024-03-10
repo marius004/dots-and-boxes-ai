@@ -14,6 +14,9 @@ class Board:
         self.possible_moves  = self.calc_possible_moves(self.rows, self.cols)
         self.performed_moves = set()
         self.scores = {}
+       
+    def all_boxes(self):
+        return [copy.deepcopy(box) for row in self.boxes for box in row]
         
     def completed_boxes(self): 
         return [copy.deepcopy(box) for row in self.boxes for box in row if box.is_complete()]
