@@ -3,12 +3,12 @@ from core.box import Box
 import copy
 
 class Board:
-    def __init__(self, rows: int, cols: int) -> None:
+    def __init__(self, rows: int, cols: int, human_starts: bool) -> None:
         self.rows = rows
         self.cols = cols
         self.boxes = [[Box(i, j) for j in range(rows)] for i in range(cols)]
         
-        self.human_player = True
+        self.human_player = human_starts
         self.scoredPoints = False
         
         self.possible_moves  = self.calc_possible_moves(self.rows, self.cols)

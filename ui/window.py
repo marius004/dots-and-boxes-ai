@@ -13,7 +13,7 @@ from math import inf
 
 class Window():
     def __init__(self, config: Config) -> None:
-        self.board = Board(config.rows, config.cols)
+        self.board = Board(config.rows, config.cols, config.human_starts)
         self.config = config
         
         self.reset_board = False
@@ -27,12 +27,16 @@ class Window():
         self.window.bind('<Button-1>', self.handle_click)
         self.restore()
         
+        self.window.update()
+        if not self.config.human_starts:
+            self.ai_move()
+        
     def mainloop(self):
         self.window.mainloop()
     
     def restore(self): 
         self.draw()
-        self.board = Board(self.config.rows, self.config.cols)
+        self.board = Board(self.config.rows, self.config.cols, self.config.human_starts)
         self.update_turn()
         
     def draw(self): 
@@ -175,13 +179,13 @@ class Window():
         self.make_move(position)
         
         while self.board.player_turn() == AI_PLAYER and not self.board.is_gameover():
-            sleep(1)
             self.ai_move()
             
     def handle_click(self, event): 
         if not self.reset_board and self.board.player_turn() == HUMAN_PLAYER:   
             self.make_move(self.position(event.x, event.y))
-            self.ai_move()        
+            if self.board.player_turn() == AI_PLAYER:
+                self.ai_move()
         elif self.reset_board: 
             self.canvas.delete("all")
             self.reset_board = False 
